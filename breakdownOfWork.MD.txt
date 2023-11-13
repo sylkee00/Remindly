@@ -1,0 +1,5 @@
+November 13th
+Suyeon Lee:
+I worked on the following tasks:
+1. Completed update function
+2. Completed Delete function
