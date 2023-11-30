@@ -65,6 +65,23 @@ let remindersController = {
   
     res.redirect("/reminders");
   },
+
+
+  // getRandomCover: async (req, res) => {
+  //   const response = await fetch("https://unsplash.com/");
+  //   const data = await response.json();
+  // }
+
 };
+
+exports.getReminders = function(req, res) {
+  // Fetch reminders for the logged-in user
+  Reminder.find({ user: req.user.id })
+    .then(reminders => {
+      res.render('reminder/index', { reminders: reminders });
+    });
+
+};
+
 
 module.exports = remindersController;

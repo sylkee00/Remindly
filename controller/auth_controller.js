@@ -1,4 +1,7 @@
+const passport = require('passport');
+const User = require('../models/userModel');
 let database = require("../database");
+
 
 let authController = {
   login: (req, res) => {
@@ -11,6 +14,11 @@ let authController = {
 
   loginSubmit: (req, res) => {
     // implement later
+    passport.authenticate('local', {
+      successRedirect: '/dashboard',
+      failureRedirect: '/login',
+      failureFlash: true
+    })(req, res, next);
   },
 
   registerSubmit: (req, res) => {

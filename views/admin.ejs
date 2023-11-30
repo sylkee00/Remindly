@@ -1,0 +1,13 @@
+<!-- Admin dashboard EJS template -->
+<h1>Admin Dashboard</h1>
+<!-- Iterate through sessions -->
+<ul>
+  <% sessions.forEach(function(session) { %>
+    <li>
+      User ID: <%= session.userId %>
+      <form action="/admin/revoke/<%= session.id %>" method="post">
+        <button type="submit">Revoke Session</button>
+      </form>
+    </li>
+  <% }); %>
+</ul>
