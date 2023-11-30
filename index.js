@@ -4,6 +4,7 @@ const path = require("path");
 const ejsLayouts = require("express-ejs-layouts");
 const reminderController = require("./controller/reminder_controller");
 const authController = require("./controller/auth_controller");
+const adminController = require("./controller/admin_controller");
 const session = require("express-session");
 const passport = require("passport");
 require('./middleware/passport')(passport);
@@ -50,6 +51,26 @@ app.get('/dashboard', ensureAuthenticated, (req, res) =>
     res.render('dashboard'));
 app.get('/admin', checkAdminRole, adminController.dashboard);
 
+const reminderRoutes = require('./routes/reminderRoutes');
+const authRoutes = require('./routes/authRoutes');
+
+app.use('/reminders', reminderRoutes);
+app.use('/auth', authRoutes);
+
+// Random image
+const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+      cb(null, 'public/uploads/');
+  },
+  filename: function(req, file, cb) {
+      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
+app.post('/reminder', upload.single('coverImage'), reminderController.create);
 
 app.listen(3001, function () {
   console.log(

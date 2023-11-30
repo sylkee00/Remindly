@@ -1,6 +1,6 @@
 exports.dashboard = function(req, res) {
     // Fetch and display sessions
-    res.render('admin', { sessions: sessions });
+    res.render('admin/dashboard');
   };
   
   exports.revokeSession = function(req, res) {

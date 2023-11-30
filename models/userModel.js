@@ -10,4 +10,11 @@ const userSchema = new mongoose.Schema({
   }
 });
 
+const reminderSchema = new mongoose.Schema({
+    title: String,
+    description: String,
+    userId: mongoose.Schema.Types.ObjectId // Link to the user who created the reminder
+  });
+
 module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('Reminder', reminderSchema);

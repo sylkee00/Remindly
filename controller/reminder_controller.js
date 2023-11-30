@@ -1,4 +1,6 @@
 let database = require("../database");
+const Reminder = require("../models/userModel");
+
 
 let remindersController = {
   list: (req, res) => {
@@ -27,7 +29,9 @@ let remindersController = {
       title: req.body.title,
       description: req.body.description,
       completed: false,
-    };
+      coverImage: req.file ? req.file.path : req.body.unsplashImageUrl
+    }; 
+    
     database.cindy.reminders.push(reminder);
     res.redirect("/reminders");
   },
@@ -75,12 +79,15 @@ let remindersController = {
 };
 
 exports.getReminders = function(req, res) {
-  // Fetch reminders for the logged-in user
-  Reminder.find({ user: req.user.id })
-    .then(reminders => {
-      res.render('reminder/index', { reminders: reminders });
-    });
-
+  Reminder.find({ userId: req.user._id }, function(err, reminders) {
+      if (err) {
+          // Handle error
+          console.error(err);
+            res.status(500).send('Error occurred while fetching reminders');
+            return;
+      }
+      res.render('reminder/list', { reminders }); // Adjust view path as necessary
+  });
 };
 
 
