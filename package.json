@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon"
   },
   "repository": {
@@ -16,15 +15,17 @@
   "homepage": "http",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "connect-redis": "^7.1.0",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
-    "express-ejs-layouts": "^2.2.0",
+    "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.17.3",
     "method-override": "^2.3.7",
     "mongoose": "^8.0.2",
     "multer": "^1.4.5-lts.1",
-    "nodemon": "^1.11.0",
+    "nodemon": "^1.19.4",
     "passport": "^0.7.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "redis": "^4.6.11"
   }
 }

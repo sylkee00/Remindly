@@ -1,37 +1,48 @@
-const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcryptjs');
-const User = require('../models/userModel');
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+const userController = require("../controller/userController")
 
+const localLogin = new LocalStrategy(
+  {
+    usernameField: "email",
+    passwordField: "password",
+  },
+  (email, password, done) => {
+    const user = userController.getUserByEmailIdAndPassword(email, password);
+    return user // user is an object with user object and jwt token
+    // done is a callback that takes 3 arguments (error, user, info)
+      ? done(null, user) // if user is found, return user object, null means no error
+      : done(null, false, {
+          message: "Your login details are not valid. Please try again",
+        }); // if user is not found (null), return false
+  }
+);
 
-module.exports = function(passport) {
-  passport.use(
-    new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
-      // Match user
-      User.findOne({ email: email }).then(user => {
-        if (!user) {
-          return done(null, false, { message: 'That email is not registered' });
-        }
+// serializeUser determines "which data" of the user object should be stored in the session to identify that user.
+// The result of the serializeUser method is attached to the session as req.session.passport.user = {}. 1. "create a session"
+passport.serializeUser(function (user, done) { // use user we got from the local strategy as a first parameter
+  done(null, user.id);
+});
+// -> 2. create req.user = {id: '...', name: '...', email: '...', password: '...'} -> information about currently logged in user
 
-        // Match password
-        bcrypt.compare(password, user.password, (err, isMatch) => {
-          if (err) throw err;
-          if (isMatch) {
-            return done(null, user);
-          } else {
-            return done(null, false, { message: 'Password incorrect' });
-          }
-        });
-      });
-    })
-  );
+passport.deserializeUser(function (id, done) {
+  let user = userController.getUserById(id);
+  if (user) {
+    done(null, user);
+  } else {
+    done({ message: "User not found" }, null);
+  }
+});
 
-  passport.serializeUser((user, done) => {
-    done(null, user.id);
-  });
+module.exports = passport.use(localLogin);
 
-  passport.deserializeUser((id, done) => {
-    User.findById(id, function(err, user) {
-      done(err, user);
-    });
-  });
-};
+// ------------Server hard drive ------------------------
+/*
+
+req.session.passport.user = {
+  'djalkfjksajfaslk': {
+    5 (user id)
+  }
+}
+
+*/

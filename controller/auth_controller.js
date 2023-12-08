@@ -1,6 +1,6 @@
 const passport = require('passport');
 const User = require('../models/userModel');
-let database = require("../database");
+// let database = require("../database");
 
 
 let authController = {
