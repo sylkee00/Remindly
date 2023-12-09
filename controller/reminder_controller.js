@@ -20,19 +20,25 @@ let remindersController = {  //objects -> in index.js, we can call it like this:
     } else {
       res.status(404).send("Reminder not found");
     }
+    console.log(searchResult);
+
   },
 
   create: (req, res) => {
+    console.log('Form Data:', req.body);
+    console.log('File:', req.file);
     let reminder = {
       id: req.user.reminders.length + 1,
       title: req.body.title,
       description: req.body.description,
       completed: false,
-      coverImage: req.file ? req.file.path : req.body.unsplashImageUrl
+      coverImage: req.file ? '/uploads/' + req.file.filename: req.body.unsplashImageUrl,
     }; 
     
     req.user.reminders.push(reminder);
     res.redirect("/reminders");
+    console.log(req.body); // Log form text fields
+    console.log(req.file); // Log file data
   },
 
   edit: (req, res) => {

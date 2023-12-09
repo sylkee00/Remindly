@@ -7,6 +7,8 @@ const passport = require("./middleware/passport");
 
 
 app.use(express.static(path.join(__dirname, "public")));  // static files -> tell our server to look in the public folder for static files, so by default,if there's no route, it will look in the public folder.
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.set("view engine", "ejs");  // view engine
 app.use(ejsLayouts);
 
@@ -95,16 +97,28 @@ app.use('/auth', authRoutes);
 const multer = require("multer");
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
-      cb(null, 'public/uploads/');
+      cb(null, 'uploads/');
   },
   filename: function(req, file, cb) {
       cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ dest: 'uploads/' });
 
 app.post('/reminder', upload.single('coverImage'), reminderController.create);
+app.get('/get-random-image', (req, res) => {
+  const unsplashUrl = 'https://api.unsplash.com/photos/random?client_id=nSDmDo2p42c3CroSm1RyqRYb48d1mOIcTMPWkPmkBlQ';
+  fetch(unsplashUrl)
+    .then(unsplashRes => unsplashRes.json())
+    .then(data => {
+      res.json({ imageUrl: data.urls.regular }); // Send the image URL back to the front-end
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send('Error fetching image from Unsplash');
+    });
+});
 
 
 // local host:3001

@@ -8,8 +8,31 @@
       <label for="description">Description</label>
       <textarea class="form-control" id="descriptionInput" rows="3" placeholder="Description" name="description"></textarea>
     </div>
-    <input type="file" name="coverImage" accept="image/*">
-    <button type="button" id="randomImage">Get Random Cover Photo</button>
-    <button type="submit" class="btn btn-default">Submit</button>
+    <label for="coverImage">Upload image:</label>
+    <input type="file" id="coverImage" name="coverImage">
+
+    <!-- Hidden input to store the Unsplash image URL -->
+    <input type="hidden" id="unsplashImageUrl" name="unsplashImageUrl" value="">
+
+    <!-- Button to get a random cover photo from Unsplash -->
+    <button type="button" id="fetchUnsplash">Get random cover photo</button>
+
+    <!-- Submit button -->
+    <input type="submit" value="Create Reminder">
   </form>
 </div>
+
+
+<script>
+  document.getElementById('fetchUnsplash').addEventListener('click', function() {
+  fetch('/get-random-image')
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('unsplashImageUrl').value = data.imageUrl;
+      // Optionally display the image to the user
+      document.getElementById('coverImage').src = data.imageUrl;
+    })
+    .catch(err => console.error(err));
+});
+
+</script>

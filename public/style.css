@@ -43,6 +43,12 @@ header.masthead h1 {
   font-size: 2rem;
 }
 
+.reminder-detail {
+  height: 300px; 
+  background-size: cover;
+  background-position: center;
+}
+
 @media (min-width: 768px) {
   header.masthead {
     padding-top: 12rem;
