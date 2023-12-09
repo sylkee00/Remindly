@@ -1,4 +1,3 @@
-// let database = require("../database");
 const database = require("../models/userModel");
 
 

@@ -2,10 +2,10 @@
 <h1>Admin Dashboard</h1>
 <!-- Iterate through sessions -->
 <ul>
-  <% if(Array.isArray(sessions)) { %>
+  <% if(sessions && sessions.length) { %>
     <% sessions.forEach(function(session) { %>
       <li>
-        User ID: <%= session.userId %>
+        Session ID: <%= session.id || 'Unknown' %>, User ID: <%= session.userId || 'Unknown' %>
         <form action="/admin/revoke/<%= session.id %>" method="post">
           <button type="submit">Revoke Session</button>
         </form>

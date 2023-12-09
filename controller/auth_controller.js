@@ -1,6 +1,5 @@
 const passport = require('passport');
 const User = require('../models/userModel');
-// let database = require("../database");
 
 
 let authController = {
@@ -12,14 +11,30 @@ let authController = {
     res.render("auth/register");
   },
 
-  loginSubmit: (req, res) => {
-    // implement later
-    passport.authenticate('local', {
-      successRedirect: '/dashboard',
-      failureRedirect: '/login',
-      failureFlash: true
+  loginSubmit: (req, res, next) => {
+    passport.authenticate('local', function(err, user, info) {
+      if (err) { 
+        return next(err); 
+      }
+      if (!user) {
+        // If user is not found, redirect back to login page
+        return res.redirect('/login');
+      }
+      req.logIn(user, function(err) {
+        if (err) { 
+          return next(err); 
+        }
+        // Set any additional session properties you need after successful login
+        req.session.userId = user.id; 
+        console.log('Logged in user:', user);
+        console.log('Session after login:', req.session);
+        // Redirect to the desired page after successful login
+        return res.redirect('/dashboard');
+        
+      });
     })(req, res, next);
   },
+
 
   registerSubmit: (req, res) => {
     // implement later

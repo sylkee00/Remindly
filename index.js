@@ -10,9 +10,11 @@ app.use(express.static(path.join(__dirname, "public")));  // static files -> tel
 app.set("view engine", "ejs");  // view engine
 app.use(ejsLayouts);
 
+global.activeSessions = {};
+
 app.use(session({
   secret: 'your secret key',
-  resave: true,
+  resave: false,
   saveUninitialized: true
 }));
 
@@ -21,27 +23,30 @@ app.use(passport.initialize());
 // hook into the persistent sessions we are using
 app.use(passport.session());
 
+// Middleware to track session creation
+app.use((req, res, next) => {
+  // Check if user is authenticated and session exists
+  if (req.isAuthenticated()) {
+    // This will set the session.userId after successful login
+    global.activeSessions[req.sessionID] = { userId: req.user.id };
+  }
+  next();
+});
 
+// Middleware to track session destruction
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    if (res.statusCode === 401 || res.statusCode === 403) {
+      // When a session is destroyed, remove it from the activeSessions object
+      delete activeSessions[req.sessionID];
+    }
+  });
+  next();
+});
 
-// Case 1: User goes to localhost:3001/ -> Homepage/Marketing Page
-// app.get ("/", function (req, res) {
-//   res.send("Welcome to the homepage!");
-// });
-
-// Case 2: User goes to localhost:3001/reminder -> Show a list of reminders
-// app.get("/reminder", reminderController.list);
-
-
-
-
-
-// require('./middleware/passport')(passport);
 const { ensureAuthenticated, checkAdminRole } = require('./middleware/checkAuth');
 
-
-
 app.use(express.urlencoded({ extended: false }));
-
 
 const authController = require("./controller/auth_controller");
 const adminController = require("./controller/admin_controller");
@@ -73,14 +78,17 @@ app.post("/auth/login", passport.authenticate("local", {
 app.get('/dashboard', ensureAuthenticated, (req, res) => 
     res.render('dashboard'));
 app.get('/admin', checkAdminRole, adminController.dashboard);
+// This route should handle the POST request to revoke a session
+app.post('/admin/revoke/:sessionId', checkAdminRole, adminController.revokeSession);
+app.post('/admin/revoke/test', checkAdminRole, (req, res) => {
+  return res.send("Test revoke route hit");
+});
 
 const reminderRoutes = require('./routes/reminderRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 app.use('/reminders', reminderRoutes);
 app.use('/auth', authRoutes);
-
-
 
 
 // Random image
